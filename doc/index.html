@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>八卦占卜桌面摆件原型</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="widget-shell">
+      <section
+        id="ornament"
+        class="ornament"
+        data-stage="1"
+        tabindex="0"
+        aria-label="八卦占卜桌面摆件交互原型"
+      >
+        <svg class="luopan" viewBox="0 0 720 720" role="img" aria-hidden="true">
+          <defs>
+            <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="1.4" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          <g id="stage4" class="stage stage-4"></g>
+          <g id="stage3" class="stage stage-3"></g>
+          <g id="stage2" class="stage stage-2"></g>
+          <g id="coreSpin" class="core-spin"></g>
+        </svg>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
