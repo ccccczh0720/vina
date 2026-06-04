@@ -125,6 +125,7 @@ function appendCircle(parent, radius, className = "ring-line") {
       cy: CY,
       r: radius,
       class: className,
+      pathLength: 1,
     }),
   );
 }
@@ -141,6 +142,7 @@ function appendRadials(parent, innerRadius, outerRadius, segments, offset = 0, c
         x2: outer.x.toFixed(2),
         y2: outer.y.toFixed(2),
         class: className,
+        pathLength: 1,
       }),
     );
   }
@@ -150,6 +152,39 @@ function appendRingGrid(parent, innerRadius, outerRadius, segments, offset = 0, 
   appendCircle(parent, innerRadius, className);
   appendCircle(parent, outerRadius, className);
   appendRadials(parent, innerRadius, outerRadius, segments, offset);
+}
+
+function appendCyberTicks(parent, innerRadius, outerRadius, segments, offset = 0) {
+  for (let i = 0; i < segments; i += 1) {
+    const angle = offset + (360 / segments) * i;
+    const inner = polar(innerRadius, angle);
+    const outer = polar(outerRadius, angle);
+    parent.appendChild(
+      svgEl("line", {
+        x1: inner.x.toFixed(2),
+        y1: inner.y.toFixed(2),
+        x2: outer.x.toFixed(2),
+        y2: outer.y.toFixed(2),
+        class: "cyber-tick",
+        pathLength: 1,
+      }),
+    );
+  }
+}
+
+function appendCyberNodes(parent, radius, segments, offset = 0) {
+  for (let i = 0; i < segments; i += 1) {
+    const angle = offset + (360 / segments) * i;
+    const point = polar(radius, angle);
+    parent.appendChild(
+      svgEl("circle", {
+        cx: point.x.toFixed(2),
+        cy: point.y.toFixed(2),
+        r: i % 2 === 0 ? 3.8 : 2.4,
+        class: "cyber-node",
+      }),
+    );
+  }
 }
 
 function appendTextRing(parent, entries, radius, offset, fontSize, className = "ring-text") {
@@ -236,7 +271,11 @@ function buildStage3(parent) {
 
 function buildStage4(parent) {
   const rotor = svgEl("g", { class: "stage-rotor" });
+  appendCircle(rotor, 356, "cyber-halo");
   appendRingGrid(rotor, 324, 350, 60, 3);
+  appendCyberTicks(rotor, 350, 365, 24, 7.5);
+  appendCyberTicks(rotor, 333, 342, 24, 7.5);
+  appendCyberNodes(rotor, 356, 12, 15);
 
   appendTextRing(rotor, sixtyJiazi, 337, 3, 10, "ring-text outer-text");
   parent.appendChild(rotor);
@@ -267,9 +306,9 @@ function attachInteraction() {
     clearTimers();
     ornament.classList.add("is-playing");
     setStage(1);
-    timers.push(setTimeout(() => setStage(2), 680));
-    timers.push(setTimeout(() => setStage(3), 1750));
-    timers.push(setTimeout(() => setStage(4), 2920));
+    timers.push(setTimeout(() => setStage(2), 260));
+    timers.push(setTimeout(() => setStage(3), 1020));
+    timers.push(setTimeout(() => setStage(4), 1840));
   };
 
   const reset = () => {

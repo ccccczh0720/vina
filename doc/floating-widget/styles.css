@@ -1,0 +1,513 @@
+:root {
+  color-scheme: dark;
+  --bg: #030303;
+  --ink: #f5f5f2;
+  --ink-soft: rgba(245, 245, 242, 0.72);
+  --line: rgba(245, 245, 242, 0.92);
+  --cyber-white: #f7fbff;
+  --cyber-cyan: #a8d8ff;
+  --cyber-blue: #2d6cff;
+  --cyber-deep: #1741d8;
+  --cyber-dim: rgba(168, 216, 255, 0.38);
+  --cyber-glow: rgba(45, 108, 255, 0.72);
+  --trigram-glow: rgba(255, 255, 255, 0.88);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+  background: transparent;
+  color: var(--ink);
+  font-family:
+    "Microsoft YaHei",
+    "PingFang SC",
+    "Noto Sans SC",
+    system-ui,
+    sans-serif;
+}
+
+.widget-shell {
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  place-items: center;
+  background: transparent;
+}
+
+.ornament {
+  width: min(43vmin, 340px);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  filter:
+    drop-shadow(0 0 12px rgba(255, 255, 255, 0.16))
+    drop-shadow(0 0 18px rgba(45, 108, 255, 0.15));
+}
+
+.ornament:focus-visible {
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.42));
+}
+
+.luopan {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+  shape-rendering: geometricPrecision;
+}
+
+.ring-line,
+.sector-line {
+  vector-effect: non-scaling-stroke;
+  stroke: var(--line);
+  stroke-width: 1.7;
+  fill: none;
+}
+
+.hairline {
+  vector-effect: non-scaling-stroke;
+  stroke: var(--ink-soft);
+  stroke-width: 1.15;
+  fill: none;
+}
+
+.core-outline {
+  vector-effect: non-scaling-stroke;
+  stroke: var(--line);
+  stroke-width: 3.2;
+  fill: none;
+}
+
+.ring-text {
+  fill: var(--ink);
+  font-family:
+    "STKaiti",
+    "KaiTi",
+    "SimSun",
+    "Microsoft YaHei",
+    serif;
+  font-weight: 500;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+}
+
+.large-text {
+  font-weight: 600;
+}
+
+.mid-text {
+  fill: rgba(245, 245, 242, 0.9);
+}
+
+.tiny-text {
+  fill: rgba(245, 245, 242, 0.82);
+  font-size: 11px;
+}
+
+.outer-text {
+  fill: rgba(245, 245, 242, 0.86);
+}
+
+.stage-3 .ring-line,
+.stage-3 .sector-line {
+  stroke: var(--cyber-cyan);
+  stroke-width: 1.55;
+}
+
+.stage-3 .hairline {
+  stroke: var(--cyber-dim);
+  stroke-width: 0.95;
+}
+
+.stage-3 .ring-text {
+  fill: var(--cyber-white);
+}
+
+.stage-3 .large-text {
+  fill: var(--cyber-cyan);
+  font-weight: 700;
+}
+
+.stage-4 .ring-line,
+.stage-4 .sector-line {
+  stroke: var(--cyber-deep);
+  stroke-width: 1.35;
+}
+
+.stage-4 .ring-text {
+  fill: #eaf4ff;
+  font-family:
+    "Microsoft YaHei UI",
+    "Microsoft YaHei",
+    "PingFang SC",
+    sans-serif;
+  font-weight: 600;
+}
+
+.cyber-tick {
+  stroke: var(--cyber-cyan);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.cyber-node {
+  fill: var(--cyber-white);
+  stroke: var(--cyber-cyan);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.cyber-halo {
+  stroke: rgba(168, 216, 255, 0.74);
+  stroke-width: 1.1;
+  fill: none;
+  stroke-dasharray: 0.04 0.028;
+  vector-effect: non-scaling-stroke;
+}
+
+.stage-3,
+.stage-4 {
+  filter: url("#cyberGlow");
+}
+
+.stage {
+  opacity: 0;
+  transform-box: view-box;
+  transform-origin: 360px 360px;
+  transform: scale(0.52) rotate(-22deg);
+  transition:
+    opacity 180ms linear,
+    transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.stage::before {
+  content: none;
+}
+
+.stage-rotor,
+.core-spin {
+  transform-box: view-box;
+  transform-origin: 360px 360px;
+  backface-visibility: hidden;
+}
+
+.ornament:is(:hover, :focus-visible, .is-playing) .stage,
+.ornament:is(:hover, :focus-visible, .is-playing) .stage-rotor,
+.ornament:is(:hover, :focus-visible, .is-playing) .core-spin {
+  will-change: transform, opacity;
+}
+
+.core-spin {
+  filter: url("#softGlow");
+}
+
+.ornament:is(:hover, :focus-visible, .is-playing) .core-spin {
+  animation: spinClockwise 4.8s linear infinite;
+}
+
+.stage .ring-line,
+.stage .hairline,
+.stage .core-outline {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.stage .sector-line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.stage .cyber-tick,
+.stage .cyber-halo {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.stage .ring-text,
+.stage .cyber-node {
+  opacity: 0;
+}
+
+.stage .trigram-line {
+  opacity: 0;
+}
+
+.ornament[data-stage="2"] .stage-2,
+.ornament[data-stage="3"] .stage-2,
+.ornament[data-stage="4"] .stage-2,
+.ornament[data-stage="3"] .stage-3,
+.ornament[data-stage="4"] .stage-3,
+.ornament[data-stage="4"] .stage-4 {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+
+.ornament[data-stage="2"] .stage-2 {
+  animation: pushOut 720ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.ornament[data-stage="3"] .stage-3 {
+  animation: pushOut 820ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.ornament[data-stage="4"] .stage-4 {
+  animation: pushOut 920ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.ornament[data-stage="2"] .stage-2 .ring-line,
+.ornament[data-stage="3"] .stage-2 .ring-line,
+.ornament[data-stage="4"] .stage-2 .ring-line,
+.ornament[data-stage="2"] .stage-2 .hairline,
+.ornament[data-stage="3"] .stage-2 .hairline,
+.ornament[data-stage="4"] .stage-2 .hairline,
+.ornament[data-stage="2"] .stage-2 .core-outline,
+.ornament[data-stage="3"] .stage-2 .core-outline,
+.ornament[data-stage="4"] .stage-2 .core-outline {
+  animation: drawRing 520ms 120ms ease-out forwards;
+}
+
+.ornament[data-stage="3"] .stage-3 .ring-line,
+.ornament[data-stage="4"] .stage-3 .ring-line,
+.ornament[data-stage="3"] .stage-3 .hairline,
+.ornament[data-stage="4"] .stage-3 .hairline {
+  animation: drawRing 620ms 160ms ease-out forwards;
+}
+
+.ornament[data-stage="4"] .stage-4 .ring-line,
+.ornament[data-stage="4"] .stage-4 .hairline,
+.ornament[data-stage="4"] .stage-4 .cyber-halo {
+  animation: drawRing 720ms 200ms ease-out forwards;
+}
+
+.ornament[data-stage="2"] .stage-2 .sector-line,
+.ornament[data-stage="3"] .stage-2 .sector-line,
+.ornament[data-stage="4"] .stage-2 .sector-line {
+  animation: growRadial 480ms 240ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.ornament[data-stage="3"] .stage-3 .sector-line,
+.ornament[data-stage="4"] .stage-3 .sector-line {
+  animation: growRadial 560ms 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.ornament[data-stage="4"] .stage-4 .sector-line {
+  animation: growRadial 640ms 360ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.ornament[data-stage="4"] .stage-4 .cyber-tick {
+  animation: growRadial 520ms 440ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.ornament[data-stage="2"] .stage-2 .trigram-line {
+  animation: trigramReveal 360ms 500ms ease-out both;
+}
+
+.ornament[data-stage="3"] .stage-3 .ring-text,
+.ornament[data-stage="4"] .stage-3 .ring-text {
+  animation: glyphReveal 420ms 620ms ease-out forwards;
+}
+
+.ornament[data-stage="4"] .stage-4 .ring-text {
+  animation: glyphReveal 460ms 720ms ease-out forwards;
+}
+
+.ornament[data-stage="4"] .stage-4 .cyber-node {
+  animation: nodePop 460ms 680ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.ornament[data-stage="2"] .stage-2 .stage-rotor,
+.ornament[data-stage="3"] .stage-2 .stage-rotor,
+.ornament[data-stage="4"] .stage-2 .stage-rotor {
+  animation: settleCounter 860ms cubic-bezier(0.16, 1, 0.3, 1), spinCounter 13s 1060ms linear infinite;
+}
+
+.ornament[data-stage="3"] .stage-3 .stage-rotor,
+.ornament[data-stage="4"] .stage-3 .stage-rotor {
+  animation: settleClockwise 980ms cubic-bezier(0.16, 1, 0.3, 1), spinClockwise 19s 1180ms linear infinite;
+}
+
+.ornament[data-stage="4"] .stage-4 .stage-rotor {
+  animation: settleClockwise 1080ms cubic-bezier(0.16, 1, 0.3, 1), spinClockwise 30s 1320ms linear infinite;
+}
+
+.trigram-line {
+  stroke: var(--ink);
+  stroke-width: 6.4;
+  stroke-linecap: butt;
+  vector-effect: non-scaling-stroke;
+}
+
+.ornament[data-stage="3"] .stage-2 .trigram-line,
+.ornament[data-stage="4"] .stage-2 .trigram-line {
+  opacity: 1;
+  filter:
+    drop-shadow(0 0 2px rgba(255, 255, 255, 0.8))
+    drop-shadow(0 0 5px rgba(168, 216, 255, 0.45));
+}
+
+.taiji-white {
+  fill: var(--ink);
+}
+
+.taiji-black {
+  fill: #000;
+}
+
+@keyframes spinClockwise {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinCounter {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes pushOut {
+  0% {
+    opacity: 0;
+    transform: scale(0.42) rotate(-24deg);
+  }
+
+  52% {
+    opacity: 1;
+    transform: scale(1.035) rotate(5deg);
+  }
+
+  74% {
+    transform: scale(0.986) rotate(-2deg);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes drawRing {
+  0% {
+    stroke-dashoffset: 1;
+    opacity: 0.45;
+  }
+
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes growRadial {
+  0% {
+    stroke-dashoffset: 1;
+    opacity: 0.3;
+  }
+
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes glyphReveal {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes trigramReveal {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes nodePop {
+  0% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+
+  68% {
+    opacity: 1;
+    transform: scale(1.35);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes settleCounter {
+  0% {
+    transform: rotate(18deg) scale(0.985);
+  }
+
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+@keyframes settleClockwise {
+  0% {
+    transform: rotate(-18deg) scale(0.985);
+  }
+
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+@media (max-width: 520px) {
+  .ornament {
+    width: min(48vmin, 260px);
+  }
+
+  .ring-line,
+  .sector-line {
+    stroke-width: 1.25;
+  }
+
+  .tiny-text {
+    font-size: 9px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ornament:is(:hover, :focus-visible, .is-playing) .core-spin,
+  .ornament[data-stage="2"] .stage-2 .stage-rotor,
+  .ornament[data-stage="3"] .stage-2 .stage-rotor,
+  .ornament[data-stage="4"] .stage-2 .stage-rotor,
+  .ornament[data-stage="3"] .stage-3 .stage-rotor,
+  .ornament[data-stage="4"] .stage-3 .stage-rotor,
+  .ornament[data-stage="4"] .stage-4 .stage-rotor {
+    animation-duration: 40s;
+  }
+}

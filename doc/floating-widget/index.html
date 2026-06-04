@@ -24,6 +24,24 @@
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
+            <filter id="cyberGlow" x="-25%" y="-25%" width="150%" height="150%">
+              <feGaussianBlur stdDeviation="1.8" result="blur" />
+              <feFlood flood-color="#2d6cff" flood-opacity="0.72" result="color" />
+              <feComposite in="color" in2="blur" operator="in" result="glow" />
+              <feMerge>
+                <feMergeNode in="glow" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+            <filter id="whiteGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="1.35" result="blur" />
+              <feFlood flood-color="#ffffff" flood-opacity="0.78" result="color" />
+              <feComposite in="color" in2="blur" operator="in" result="glow" />
+              <feMerge>
+                <feMergeNode in="glow" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
           </defs>
           <g id="stage4" class="stage stage-4"></g>
           <g id="stage3" class="stage stage-3"></g>
