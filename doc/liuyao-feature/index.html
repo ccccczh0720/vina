@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>六爻起卦排盘悬浮窗口</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="desktop-stage">
+      <section class="floating-window" aria-label="六爻起卦排盘悬浮窗口">
+        <header class="window-bar">
+          <div class="window-title">
+            <span class="window-mark"></span>
+            <div>
+              <h1>六爻起卦排盘</h1>
+              <p>问事 · 起卦 · 排盘 · 解卦</p>
+            </div>
+          </div>
+          <div class="window-actions" aria-label="窗口操作">
+            <button type="button" aria-label="最小化"></button>
+            <button type="button" aria-label="关闭"></button>
+          </div>
+        </header>
+
+        <div class="window-body">
+          <aside class="flow-rail" aria-label="功能流程">
+            <div class="brand">流程</div>
+            <ol class="steps">
+              <li class="active">问事</li>
+              <li>起卦</li>
+              <li>排盘</li>
+              <li>解卦</li>
+            </ol>
+          </aside>
+
+          <section class="workspace">
+            <header class="topbar">
+              <div>
+                <h2>问卦信息</h2>
+                <p>输入问题或选择类型后生成六爻排盘</p>
+              </div>
+              <button id="castButton" class="primary-button cast-action" type="button">起卦</button>
+            </header>
+
+            <section class="panel inquiry-panel">
+              <div class="panel-title">
+                <h3>问事输入</h3>
+                <span>Step 01</span>
+              </div>
+              <textarea id="questionInput" rows="3" placeholder="输入你要问的问题，例如：这个项目是否适合现在启动？"></textarea>
+              <div class="type-grid" role="group" aria-label="问题类型">
+                <button class="type-card active" data-type="事业">事业</button>
+                <button class="type-card" data-type="财运">财运</button>
+                <button class="type-card" data-type="感情">感情</button>
+                <button class="type-card" data-type="健康">健康</button>
+                <button class="type-card" data-type="学业">学业</button>
+                <button class="type-card" data-type="其他">其他</button>
+              </div>
+            </section>
+
+            <section class="grid-area">
+              <section class="panel cast-panel">
+                <div class="panel-title">
+                  <h3>起卦结果</h3>
+                  <span>Step 02</span>
+                </div>
+                <div class="hexagram-summary">
+                  <div>
+                    <label>本卦</label>
+                    <strong id="mainHexagram">风火家人</strong>
+                  </div>
+                  <div>
+                    <label>变卦</label>
+                    <strong id="changedHexagram">天火同人</strong>
+                  </div>
+                  <div>
+                    <label>动爻</label>
+                    <strong id="movingLines">五爻动</strong>
+                  </div>
+                </div>
+                <div class="meta-strip">
+                  <span>月建：午</span>
+                  <span>日辰：庚申</span>
+                  <span>旬空：子丑</span>
+                </div>
+              </section>
+
+              <section class="panel chart-panel">
+                <div class="panel-title">
+                  <h3>排盘</h3>
+                  <span>Step 03</span>
+                </div>
+                <div class="chart-head">
+                  <span>六神</span>
+                  <span>六亲</span>
+                  <span>本卦</span>
+                  <span>动</span>
+                  <span>变卦</span>
+                  <span>世应</span>
+                </div>
+                <div id="lineChart" class="line-chart"></div>
+              </section>
+            </section>
+
+            <section class="panel reading-panel">
+              <div class="panel-title">
+                <h3>解卦</h3>
+                <span>Step 04</span>
+              </div>
+              <div class="reading-grid">
+                <article>
+                  <h4>卦象判断</h4>
+                  <p id="readingOverview">当前问题以稳定推进为主，外部条件有助力，但关键节点需要等待动爻所指的时机。</p>
+                </article>
+                <article>
+                  <h4>用神分析</h4>
+                  <p>根据问题类型自动建议用神，并结合月建、日辰、动爻、世应关系给出强弱判断。</p>
+                </article>
+                <article>
+                  <h4>行动建议</h4>
+                  <p>先确认资源与合作边界，再推进核心动作。避免在信息不完整时做最终承诺。</p>
+                </article>
+              </div>
+            </section>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
