@@ -1,76 +1,46 @@
-# 八卦六爻桌面摆件技术实现文档
+# 跨端公共技术实现文档
+
+本文档描述 App 端、网页端、桌面摆件端都可复用的业务技术架构。桌面摆件端的窗口、透明背景、置顶、托盘等端侧实现放在 `doc/desktop-widget`。
 
 ## 项目目标
 
-实现一个 Windows 桌面摆件应用。默认在桌面显示一个可悬浮交互的八卦罗盘图标；用户点击摆件后，打开六爻起卦排盘悬浮窗口，完成“输入问题或类型 -> 起卦 -> 排盘 -> 解卦”的完整流程。
+构建一套可跨端复用的六爻起卦排盘与解卦能力。不同端只负责呈现和交互，起卦、排盘、解卦、历史记录等核心逻辑保持一致。
 
-当前原型目录：
+目标流程：
 
-- `doc/floating-widget`：桌面摆件外部图标原型。
-- `doc/liuyao-feature`：点击摆件后打开的六爻排盘悬浮窗口原型。
+1. 用户输入问题或选择问题类型。
+2. 用户选择或触发起卦方式。
+3. 系统生成六爻排盘。
+4. 系统输出解卦结果。
+5. 系统保存历史记录。
 
-## 推荐技术栈
-
-优先推荐 Tauri：
-
-- 运行时轻量，适合桌面摆件。
-- 支持透明、无边框、置顶窗口。
-- 可以用 Rust 侧处理窗口控制、文件存储、系统托盘。
-- 前端仍使用 HTML/CSS/SVG/JavaScript 或后续迁移为 React/Vue。
-
-备选 Electron：
-
-- Node.js 能力更完整。
-- 桌面生态成熟。
-- 资源占用更高，不如 Tauri 适合小摆件。
-
-## 整体架构
+## 公共业务架构
 
 ```text
-Desktop App
-├─ Floating Widget Window
-│  ├─ BaguaWidget
-│  ├─ LuopanRenderer
-│  └─ MotionController
-├─ Liuyao Feature Window
+Shared Domain
+├─ Question
 │  ├─ QuestionInput
-│  ├─ CastPanel
-│  ├─ LiuyaoChart
-│  └─ InterpretationPanel
-├─ Core Domain
+│  └─ QuestionType
+├─ Casting
 │  ├─ CastEngine
+│  ├─ AutoCastStrategy
+│  ├─ CoinCastStrategy
+│  └─ ManualHexagramStrategy
+├─ Chart
 │  ├─ HexagramEngine
 │  ├─ LiuYaoAssembler
-│  └─ InterpretationEngine
-├─ Desktop Services
-│  ├─ WindowController
-│  ├─ TrayController
-│  ├─ SettingsStore
-│  └─ HistoryStore
-└─ Shared
-   ├─ types
-   ├─ constants
-   └─ date-time helpers
+│  ├─ NaJiaRules
+│  ├─ SixRelationRules
+│  └─ SixSpiritRules
+├─ Interpretation
+│  ├─ InterpretationEngine
+│  ├─ UsefulGodRules
+│  ├─ StrengthRules
+│  └─ AdviceRules
+└─ Persistence
+   ├─ HistoryStore
+   └─ SettingsStore
 ```
-
-## 窗口设计
-
-### 外部摆件窗口
-
-- 无边框。
-- 背景透明。
-- 默认只显示八卦太极图标。
-- 鼠标悬浮时由内向外展开罗盘外环。
-- 点击时打开六爻功能悬浮窗口。
-- 支持拖拽移动、置顶、位置记忆。
-
-### 六爻功能窗口
-
-- 由外部摆件点击触发。
-- 使用独立悬浮窗口，不占满屏幕。
-- 默认居中或靠近摆件弹出。
-- 支持关闭、最小化、拖拽、尺寸记忆。
-- 内部流程为问事、起卦、排盘、解卦。
 
 ## 核心数据结构
 
@@ -117,19 +87,18 @@ type Interpretation = {
 
 ## 起卦排盘流程
 
-1. 用户输入问题或选择问题类型。
-2. 用户点击“起卦”。
-3. `CastEngine` 根据起卦方式生成六爻阴阳和动爻。
-4. `HexagramEngine` 计算本卦、变卦。
-5. `LiuYaoAssembler` 装纳甲、六亲、六神、世应。
-6. 根据当前日期计算月建、日辰、旬空。
-7. 生成结构化 `LiuYaoChart`。
-8. `InterpretationEngine` 根据排盘数据生成解卦文本。
-9. `HistoryStore` 保存问卦记录。
+1. 校验问题文本和问题类型。
+2. 根据起卦方式生成六爻阴阳和动爻。
+3. 计算本卦、变卦。
+4. 装纳甲、六亲、六神、世应。
+5. 根据日期计算月建、日辰、旬空。
+6. 生成结构化 `LiuYaoChart`。
+7. 调用解卦引擎生成 `Interpretation`。
+8. 保存历史记录。
 
 ## 解卦架构
 
-第一版建议使用规则引擎，不直接依赖 AI。
+第一版使用规则引擎，不直接依赖 AI。
 
 规则维度：
 
@@ -139,25 +108,18 @@ type Interpretation = {
 - 世应判断自身与对象关系。
 - 冲、合、刑、害、空亡作为辅助判断。
 
-后续可以接入 AI，但 AI 只负责把结构化判断组织成自然语言，不能让 AI 自由生成排盘。
+AI 可作为后续增强，但 AI 输入必须来自结构化排盘和规则判断，不能让 AI 自由生成排盘。
 
-## 存储方案
+## 跨端复用原则
 
-建议保存：
+- 公共业务模块不读取 DOM。
+- 公共业务模块不依赖桌面窗口 API。
+- 排盘结果统一使用 `LiuYaoChart`。
+- 解卦结果统一使用 `Interpretation`。
+- 各端只负责收集输入、展示结果、保存端侧设置。
 
-- 用户设置：窗口位置、大小、置顶、动画开关、默认起卦方式。
-- 问卦历史：问题、类型、排盘结果、解卦结果、创建时间。
+## 后续端侧目录
 
-Tauri 可使用本地 JSON、SQLite 或插件存储。第一版建议使用 JSON，后续历史数据增多后迁移 SQLite。
-
-## 开发阶段
-
-1. 完成静态原型确认。
-2. 搭建 Tauri 桌面壳。
-3. 接入外部摆件窗口。
-4. 接入六爻功能悬浮窗口。
-5. 实现窗口打开、关闭、拖拽、置顶和位置记忆。
-6. 实现六爻起卦和排盘核心算法。
-7. 实现规则解卦引擎。
-8. 增加历史记录和设置。
-9. 打包 Windows 安装包。
+- `doc/desktop-widget`：桌面摆件端。
+- `doc/app-client`：未来 App 端。
+- `doc/web-client`：未来网页端。

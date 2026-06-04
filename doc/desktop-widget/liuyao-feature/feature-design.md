@@ -1,6 +1,6 @@
 # 六爻起卦排盘悬浮窗口功能设计
 
-本功能是 `doc/floating-widget` 外部桌面摆件点击后打开的悬浮窗口。窗口不做整页应用，而是作为桌面摆件的功能面板承载问事、起卦、排盘和解卦流程。
+本功能是 `doc/desktop-widget/floating-widget` 外部桌面摆件点击后打开的悬浮窗口。窗口不做整页应用，而是作为桌面摆件的功能面板承载问事、起卦、排盘和解卦流程。
 
 ## 功能顺序
 
@@ -37,4 +37,4 @@
 
 ## 原型入口
 
-打开 `doc/liuyao-feature/index.html` 查看悬浮窗口原型。
+打开 `doc/desktop-widget/liuyao-feature/index.html` 查看悬浮窗口原型。
