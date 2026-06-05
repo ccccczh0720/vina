@@ -5,3 +5,10 @@ config/ai.config.local.json
 .env
 .env.*
 !.env.example
+
+# Frontend dependencies and build output.
+node_modules/
+dist/
+
+# Rust/Tauri build output.
+target/
