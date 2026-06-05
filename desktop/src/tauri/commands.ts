@@ -9,6 +9,10 @@ export function hideLiuyaoWindow(): Promise<void> {
   return invoke("hide_liuyao_window");
 }
 
+export function exitApp(): Promise<void> {
+  return invoke("exit_app");
+}
+
 export function saveWindowState(label: string, state: WindowState): Promise<void> {
   return invoke("save_window_state", { label, state });
 }

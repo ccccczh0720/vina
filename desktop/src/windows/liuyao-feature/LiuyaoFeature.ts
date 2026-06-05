@@ -4,6 +4,7 @@ import { interpretPlate } from "../../core/liuyao/interpret";
 import { createPlate } from "../../core/liuyao/plate";
 import type { CastLine, CastPreview, CoinValue, Interpretation, LiuyaoLineDetail, LiuyaoPlate, TopicType, YinYang } from "../../core/liuyao/types";
 import { hideLiuyaoWindow, polishInterpretation } from "../../tauri/commands";
+import { emit } from "@tauri-apps/api/event";
 
 type ViewState = "ask" | "preview" | "plate" | "reading";
 
@@ -225,6 +226,10 @@ function sleep(ms: number): Promise<void> {
   });
 }
 
+function setLiuyaoCastingState(casting: boolean): void {
+  void emit("liuyao-casting-state", { casting });
+}
+
 async function animateCast(root: HTMLElement, preview: CastPreview): Promise<void> {
   const revealedLines: CastLine[] = [];
   const castButton = root.querySelector<HTMLButtonElement>("#castButton");
@@ -232,6 +237,7 @@ async function animateCast(root: HTMLElement, preview: CastPreview): Promise<voi
   const confirmButton = root.querySelector<HTMLButtonElement>("#confirmButton");
 
   isCasting = true;
+  setLiuyaoCastingState(true);
   if (castButton) {
     castButton.disabled = true;
   }
@@ -257,6 +263,7 @@ async function animateCast(root: HTMLElement, preview: CastPreview): Promise<voi
   renderPreview(root, preview);
   setHint(root, "六爻已成，请先观象，确认后入排盘。");
   isCasting = false;
+  setLiuyaoCastingState(false);
   if (castButton) {
     castButton.disabled = false;
   }

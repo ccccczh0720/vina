@@ -3,11 +3,11 @@
   --ink: #f5f5f2;
   --ink-soft: rgba(245, 245, 242, 0.72);
   --line: rgba(245, 245, 242, 0.92);
-  --cyber-white: #f7fbff;
-  --cyber-cyan: #a8d8ff;
-  --cyber-blue: #2d6cff;
-  --cyber-deep: #1741d8;
-  --cyber-dim: rgba(168, 216, 255, 0.38);
+  --cyber-white: rgba(20, 20, 20, 0.78);
+  --cyber-cyan: rgba(18, 18, 18, 0.42);
+  --cyber-blue: #111;
+  --cyber-deep: rgba(0, 0, 0, 0.68);
+  --cyber-dim: rgba(0, 0, 0, 0.18);
   font-family:
     "Microsoft YaHei",
     "PingFang SC",
@@ -43,6 +43,7 @@ button {
 }
 
 .widget-shell {
+  position: relative;
   width: 100vw;
   height: 100vh;
   display: grid;
@@ -66,8 +67,7 @@ button {
   -webkit-tap-highlight-color: transparent;
   -webkit-app-region: no-drag;
   filter:
-    drop-shadow(0 0 12px rgba(255, 255, 255, 0.16))
-    drop-shadow(0 0 18px rgba(45, 108, 255, 0.15));
+    drop-shadow(0 0 4px rgba(0, 0, 0, 0.08));
 }
 
 .ornament:focus-visible {
@@ -163,7 +163,7 @@ button {
 }
 
 .stage-4 .ring-text {
-  fill: #eaf4ff;
+  fill: rgba(0, 0, 0, 0.72);
   font-family:
     "Microsoft YaHei UI",
     "Microsoft YaHei",
@@ -189,7 +189,7 @@ button {
 }
 
 .cyber-halo {
-  stroke: rgba(168, 216, 255, 0.74);
+  stroke: rgba(0, 0, 0, 0.4);
   stroke-width: 1.1;
   fill: none;
   stroke-dasharray: 0.04 0.028;
@@ -230,6 +230,84 @@ button {
 
 .ornament:is(:hover, :focus-visible, .is-playing) .core-spin {
   animation: spinClockwise 4.8s linear infinite;
+}
+
+.ornament.is-linked-open {
+  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.12));
+}
+
+.ornament.is-casting {
+  filter: none;
+}
+
+.ornament.is-casting .core-spin {
+  animation-duration: 1.35s;
+}
+
+.ornament.is-casting .stage-3,
+.ornament.is-casting .stage-4 {
+  filter: none;
+}
+
+.ornament-menu {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  z-index: 4;
+  min-width: 104px;
+  display: none;
+  padding: 5px;
+  border: 1px solid rgba(32, 36, 46, 0.18);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 8px 22px rgba(24, 30, 44, 0.16);
+  pointer-events: auto;
+}
+
+.ornament-menu.is-open {
+  display: grid;
+  gap: 2px;
+}
+
+.ornament-menu button {
+  width: 100%;
+  min-height: 30px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 5px;
+  color: #1d2430;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  text-align: left;
+}
+
+.ornament-menu button:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.ornament-toast {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  z-index: 5;
+  padding: 5px 10px;
+  border-radius: 999px;
+  color: #1d2430;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 6px 18px rgba(24, 30, 44, 0.14);
+  font-size: 13px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 6px);
+  transition:
+    opacity 140ms ease,
+    transform 140ms ease;
+}
+
+.ornament-toast.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
 }
 
 .stage .ring-line,
@@ -346,6 +424,18 @@ button {
   animation: settleClockwise 1080ms cubic-bezier(0.16, 1, 0.3, 1), spinClockwise 30s 1320ms linear infinite;
 }
 
+.ornament.is-casting[data-stage="4"] .stage-2 .stage-rotor {
+  animation: spinCounter 3.4s linear infinite;
+}
+
+.ornament.is-casting[data-stage="4"] .stage-3 .stage-rotor {
+  animation: spinClockwise 4.6s linear infinite;
+}
+
+.ornament.is-casting[data-stage="4"] .stage-4 .stage-rotor {
+  animation: spinClockwise 6.2s linear infinite;
+}
+
 .trigram-line {
   stroke: var(--ink);
   stroke-width: 6.4;
@@ -356,9 +446,7 @@ button {
 .ornament[data-stage="3"] .stage-2 .trigram-line,
 .ornament[data-stage="4"] .stage-2 .trigram-line {
   opacity: 1;
-  filter:
-    drop-shadow(0 0 2px rgba(255, 255, 255, 0.8))
-    drop-shadow(0 0 5px rgba(168, 216, 255, 0.45));
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.18));
 }
 
 .taiji-white {

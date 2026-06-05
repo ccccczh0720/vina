@@ -1,5 +1,13 @@
 use serde::{Deserialize, Serialize};
-use tauri::{AppHandle, Manager};
+use tauri::{AppHandle, Emitter, Manager};
+
+const LIUYAO_WINDOW_STATE_EVENT: &str = "liuyao-window-state";
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct LiuyaoWindowState {
+    open: bool,
+}
 
 pub fn init(app: &AppHandle) -> tauri::Result<()> {
     if let Some(window) = app.get_webview_window("floating") {
@@ -28,6 +36,12 @@ pub fn open_liuyao_window(app: AppHandle) -> Result<(), String> {
 
     window.show().map_err(|error| error.to_string())?;
     window.set_focus().map_err(|error| error.to_string())?;
+    app.emit_to(
+        "floating",
+        LIUYAO_WINDOW_STATE_EVENT,
+        LiuyaoWindowState { open: true },
+    )
+    .map_err(|error| error.to_string())?;
     Ok(())
 }
 
@@ -37,7 +51,18 @@ pub fn hide_liuyao_window(app: AppHandle) -> Result<(), String> {
         .get_webview_window("liuyao")
         .ok_or_else(|| "liuyao window not found.".to_string())?;
 
-    window.hide().map_err(|error| error.to_string())
+    window.hide().map_err(|error| error.to_string())?;
+    app.emit_to(
+        "floating",
+        LIUYAO_WINDOW_STATE_EVENT,
+        LiuyaoWindowState { open: false },
+    )
+    .map_err(|error| error.to_string())
+}
+
+#[tauri::command]
+pub fn exit_app(app: AppHandle) {
+    app.exit(0);
 }
 
 #[tauri::command]

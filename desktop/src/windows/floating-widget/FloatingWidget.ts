@@ -1,4 +1,5 @@
-import { openLiuyaoWindow } from "../../tauri/commands";
+import { exitApp, openLiuyaoWindow } from "../../tauri/commands";
+import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
@@ -293,6 +294,7 @@ function attachInteraction(root: HTMLElement): void {
   }
 
   const timers: number[] = [];
+  let forceExpanded = false;
   const clearTimers = () => {
     while (timers.length > 0) {
       window.clearTimeout(timers.pop());
@@ -302,6 +304,12 @@ function attachInteraction(root: HTMLElement): void {
     ornament.dataset.stage = String(stage);
   };
   const play = () => {
+    if (forceExpanded) {
+      ornament.classList.add("is-playing");
+      setStage(4);
+      return;
+    }
+
     clearTimers();
     ornament.classList.add("is-playing");
     setStage(1);
@@ -310,9 +318,49 @@ function attachInteraction(root: HTMLElement): void {
     timers.push(window.setTimeout(() => setStage(4), 1840));
   };
   const reset = () => {
+    if (forceExpanded) {
+      return;
+    }
+
     clearTimers();
     ornament.classList.remove("is-playing");
     setStage(1);
+  };
+  const setExpanded = (expanded: boolean) => {
+    forceExpanded = expanded;
+    clearTimers();
+    ornament.classList.toggle("is-linked-open", expanded);
+    ornament.classList.add("is-playing");
+    setStage(expanded ? 4 : 1);
+
+    if (!expanded) {
+      ornament.classList.remove("is-playing");
+      ornament.classList.remove("is-casting");
+    }
+  };
+  const menu = root.querySelector<HTMLElement>("#ornamentMenu");
+  const toast = root.querySelector<HTMLElement>("#ornamentToast");
+  let toastTimer: number | null = null;
+  const hideMenu = () => {
+    menu?.classList.remove("is-open");
+  };
+  const showMenu = () => {
+    menu?.classList.add("is-open");
+  };
+  const showTodo = () => {
+    if (!toast) {
+      return;
+    }
+
+    toast.textContent = "待开发";
+    toast.classList.add("is-visible");
+    if (toastTimer !== null) {
+      window.clearTimeout(toastTimer);
+    }
+    toastTimer = window.setTimeout(() => {
+      toast.classList.remove("is-visible");
+      toastTimer = null;
+    }, 1200);
   };
   let dragStart: { x: number; y: number } | null = null;
   let isDragging = false;
@@ -326,6 +374,7 @@ function attachInteraction(root: HTMLElement): void {
       return;
     }
 
+    hideMenu();
     dragStart = { x: event.clientX, y: event.clientY };
     isDragging = false;
     ornament.setPointerCapture(event.pointerId);
@@ -361,12 +410,56 @@ function attachInteraction(root: HTMLElement): void {
       isDragging = false;
     }, 0);
   });
-  ornament.addEventListener("click", () => {
+  ornament.addEventListener("dblclick", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    hideMenu();
     if (isDragging) {
       return;
     }
 
     void openLiuyaoWindow();
+  });
+  ornament.addEventListener("contextmenu", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    showMenu();
+  });
+  root.querySelectorAll<HTMLButtonElement>("[data-widget-action]").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const action = button.dataset.widgetAction;
+      hideMenu();
+
+      if (action === "exit") {
+        void exitApp();
+        return;
+      }
+
+      showTodo();
+    });
+  });
+  document.addEventListener("pointerdown", (event) => {
+    if (!menu?.classList.contains("is-open")) {
+      return;
+    }
+
+    const target = event.target;
+    if (target instanceof Node && menu.contains(target)) {
+      return;
+    }
+
+    hideMenu();
+  });
+
+  void listen<{ open: boolean }>("liuyao-window-state", (event) => {
+    setExpanded(event.payload.open);
+  });
+  void listen<{ casting: boolean }>("liuyao-casting-state", (event) => {
+    ornament.classList.toggle("is-casting", event.payload.casting);
+    if (event.payload.casting) {
+      setExpanded(true);
+    }
   });
 }
 
@@ -383,9 +476,9 @@ export function mountFloatingWidget(root: HTMLElement): void {
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
-            <filter id="cyberGlow" x="-25%" y="-25%" width="150%" height="150%">
-              <feGaussianBlur stdDeviation="1.8" result="blur" />
-              <feFlood flood-color="#2d6cff" flood-opacity="0.72" result="color" />
+            <filter id="cyberGlow" x="-10%" y="-10%" width="120%" height="120%">
+              <feGaussianBlur stdDeviation="0.65" result="blur" />
+              <feFlood flood-color="#000000" flood-opacity="0.2" result="color" />
               <feComposite in="color" in2="blur" operator="in" result="glow" />
               <feMerge>
                 <feMergeNode in="glow" />
@@ -399,6 +492,12 @@ export function mountFloatingWidget(root: HTMLElement): void {
           <g id="coreSpin" class="core-spin"></g>
         </svg>
       </section>
+      <div id="ornamentMenu" class="ornament-menu" role="menu" aria-label="摆件菜单">
+        <button type="button" role="menuitem" data-widget-action="model">模型设置</button>
+        <button type="button" role="menuitem" data-widget-action="history">历史起卦</button>
+        <button type="button" role="menuitem" data-widget-action="exit">退出</button>
+      </div>
+      <div id="ornamentToast" class="ornament-toast" role="status" aria-live="polite"></div>
     </main>
   `;
   buildLuopan(root);

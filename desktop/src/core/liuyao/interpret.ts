@@ -144,6 +144,67 @@ function movingEffect(line: LiuyaoLineDetail, usefulLine: LiuyaoLineDetail): "su
   return "neutral";
 }
 
+function buildJudgement(
+  plate: LiuyaoPlate,
+  strength: "strong" | "neutral" | "weak",
+  usefulScore: number,
+  movingSummaries: Array<{ effect: "support" | "block" | "mixed" | "neutral" }>,
+): { verdict: string; summary: string; advice: string[] } {
+  const supportCount = movingSummaries.filter((item) => item.effect === "support").length;
+  const blockCount = movingSummaries.filter((item) => item.effect === "block").length;
+  const mixedCount = movingSummaries.filter((item) => item.effect === "mixed").length;
+  const movingDelta = supportCount - blockCount - mixedCount * 0.5;
+  const finalScore = usefulScore + movingDelta;
+  const hasBlockingMotion = blockCount > 0 || mixedCount > 0;
+  const hasSupportMotion = supportCount > 0;
+
+  if (finalScore >= 2.5 && !hasBlockingMotion) {
+    return {
+      verdict: "吉",
+      summary: `此卦${plate.primaryHexagram.name}，用神得力，动爻亦不伤用，断为吉。`,
+      advice: ["可以做，按正常节奏推进即可。", "动爻无明显克害，不必把小波动看成大阻碍。"],
+    };
+  }
+
+  if (finalScore >= 1.5) {
+    return {
+      verdict: "吉中有阻",
+      summary: `此卦${plate.primaryHexagram.name}，本势偏吉，但动爻见阻，断为吉中有阻。`,
+      advice: ["事情可成，但阻点真实存在，先处理动爻所指的冲突。", "不要泛泛求稳，重点看克制用神或一动一变的爻位。"],
+    };
+  }
+
+  if (finalScore <= -1.5 && !hasSupportMotion) {
+    return {
+      verdict: "凶",
+      summary: `此卦${plate.primaryHexagram.name}，用神受制且无明显来扶，断为凶。`,
+      advice: ["不宜强行推进，当前条件不足。", "先止损、避险或换时机，不要用侥幸心态硬上。"],
+    };
+  }
+
+  if (finalScore <= -0.5) {
+    return {
+      verdict: "凶中有救",
+      summary: `此卦${plate.primaryHexagram.name}，本势偏凶，但仍有动爻扶助，断为凶中有救。`,
+      advice: ["先按凶看，谨慎处理；可用扶助用神的动爻作为补救方向。", "若补救条件落不下来，则仍以不成或多阻论。"],
+    };
+  }
+
+  if (strength === "strong" && !hasBlockingMotion) {
+    return {
+      verdict: "小吉",
+      summary: `此卦${plate.primaryHexagram.name}，用神有根，但成势不重，断为小吉。`,
+      advice: ["可以试行，收益和进展有限，不宜夸大结果。", "无须过度保守，也不要追加过多成本。"],
+    };
+  }
+
+  return {
+    verdict: "平",
+    summary: `此卦${plate.primaryHexagram.name}，吉凶力量相抵，断为平。`,
+    advice: ["暂不作大判断，先看现实条件是否继续明朗。", "要么小范围验证，要么等待新的外部信号。"],
+  };
+}
+
 export function interpretPlate(plate: LiuyaoPlate): Interpretation {
   const usefulLine = findUsefulLine(plate);
   const score = scoreUsefulLine(plate, usefulLine);
@@ -164,18 +225,9 @@ export function interpretPlate(plate: LiuyaoPlate): Interpretation {
     };
   });
   const usefulLabel = usefulLine.role === "世" ? "世爻" : usefulLine.role === "应" ? "应爻" : usefulLine.sixRelative;
-  const summary =
-    strength === "strong"
-      ? `此卦${plate.primaryHexagram.name}，用神有力，事情具备推进条件。`
-      : strength === "weak"
-        ? `此卦${plate.primaryHexagram.name}，用神偏弱，当前阻力或不确定性较重。`
-        : `此卦${plate.primaryHexagram.name}，用神平平，宜先辨明节奏再行动。`;
-  const advice =
-    strength === "strong"
-      ? ["可稳步推进，但仍需按动爻所示处理变化点。", "先确认资源、承诺和时间节点，避免过度冒进。"]
-      : strength === "weak"
-        ? ["暂不宜强推，先补足条件或等待外部信号转明。", "对关键承诺保留书面确认，降低反复。"]
-        : ["以观察和小步验证为宜，不必一次押上全部资源。", "把主动权放在可控环节，避免被外部节奏牵动。"];
+  const judgement = buildJudgement(plate, strength, score.score, movingSummaries);
+  const summary = `${judgement.verdict}。${judgement.summary}`;
+  const advice = judgement.advice;
 
   const sourceText = [
     `总论：${summary}`,

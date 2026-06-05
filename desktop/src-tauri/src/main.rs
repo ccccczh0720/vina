@@ -17,6 +17,7 @@ fn main() {
             ai::polish_interpretation,
             settings::load_app_settings,
             settings::save_app_settings,
+            window::exit_app,
             window::hide_liuyao_window,
             window::load_window_state,
             window::open_liuyao_window,
