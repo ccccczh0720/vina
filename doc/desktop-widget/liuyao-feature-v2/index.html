@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>天道六爻 v2</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="ink-stage">
+      <section class="ink-window" aria-label="天道六爻起卦排盘窗口">
+        <header class="window-head">
+          <div class="seal">天</div>
+          <div>
+            <h1>天道六爻</h1>
+            <p>问事 · 起卦 · 观象 · 解卦</p>
+          </div>
+          <button id="historyButton" class="ghost-button" type="button">历史</button>
+        </header>
+
+        <div class="layout">
+          <aside class="left-rail">
+            <ol id="steps" class="steps" aria-label="流程">
+              <li class="active" data-step="inputting">问</li>
+              <li data-step="pendingConfirmation">象</li>
+              <li data-step="charting">盘</li>
+              <li data-step="completed">解</li>
+            </ol>
+          </aside>
+
+          <section class="workbench">
+            <section class="paper inquiry">
+              <div class="section-title">
+                <span>问事</span>
+                <small>Question</small>
+              </div>
+              <div class="type-grid" role="group" aria-label="问题类型">
+                <button class="type-chip active" data-type="career" type="button">事业</button>
+                <button class="type-chip" data-type="wealth" type="button">财运</button>
+                <button class="type-chip" data-type="relationship" type="button">感情</button>
+                <button class="type-chip" data-type="health" type="button">健康</button>
+                <button class="type-chip" data-type="study" type="button">学业</button>
+                <button class="type-chip" data-type="other" type="button">其他</button>
+              </div>
+              <div id="customTypeRow" class="custom-row" hidden>
+                <input id="customTypeInput" type="text" placeholder="输入自定义问题类型" />
+              </div>
+              <textarea id="questionInput" rows="3" placeholder="可输入具体所问；选择“其他”时必须补充说明。"></textarea>
+              <div class="action-row">
+                <p id="formHint" class="hint">择其类，静其心，自动起卦后先观象。</p>
+                <button id="castButton" class="ink-button" type="button">自动起卦</button>
+              </div>
+            </section>
+
+            <section id="previewPanel" class="paper preview muted-panel">
+              <div class="section-title">
+                <span>观象</span>
+                <small>Pending Confirmation</small>
+              </div>
+              <div class="hexagram-pair">
+                <article>
+                  <small>本卦</small>
+                  <strong id="previewMain">未起</strong>
+                </article>
+                <article>
+                  <small>变卦</small>
+                  <strong id="previewChanged">未起</strong>
+                </article>
+                <article>
+                  <small>动爻</small>
+                  <strong id="previewMoving">未起</strong>
+                </article>
+              </div>
+              <div id="previewLines" class="yao-stack"></div>
+              <div class="action-row">
+                <p id="previewHint" class="hint">起卦后确认卦象，再入排盘解卦。</p>
+                <button id="confirmButton" class="ink-button secondary" type="button" disabled>确认卦象</button>
+              </div>
+            </section>
+
+            <section class="main-grid">
+              <section class="paper chart">
+                <div class="section-title">
+                  <span>排盘</span>
+                  <small>Chart</small>
+                </div>
+                <div class="chart-head">
+                  <span>六神</span>
+                  <span>六亲</span>
+                  <span>本卦</span>
+                  <span>动</span>
+                  <span>变卦</span>
+                  <span>世应</span>
+                </div>
+                <div id="chartRows" class="chart-rows"></div>
+              </section>
+
+              <section class="paper interpretation">
+                <div class="section-title">
+                  <span>解卦</span>
+                  <small>Heavenly Reading</small>
+                </div>
+                <div class="reading-block">
+                  <h2 id="readingTitle">天道未显</h2>
+                  <p id="readingText">确认卦象后，此处展示规则解卦与 AI 润色后的文案。</p>
+                </div>
+                <div class="advice-list">
+                  <article>
+                    <span>用神</span>
+                    <p id="usefulGodText">待排盘</p>
+                  </article>
+                  <article>
+                    <span>世应</span>
+                    <p id="relationText">待排盘</p>
+                  </article>
+                  <article>
+                    <span>动爻</span>
+                    <p id="movingText">待排盘</p>
+                  </article>
+                </div>
+              </section>
+            </section>
+          </section>
+        </div>
+      </section>
+
+      <dialog id="historyDialog" class="history-dialog">
+        <h2>历史记录</h2>
+        <p>历史记录待开发中</p>
+        <button id="closeHistoryButton" class="ink-button secondary" type="button">知道了</button>
+      </dialog>
+    </main>
+    <script src="./app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,7 @@
+# Local AI configuration with real API keys.
+config/ai.config.local.json
+
+# Environment files may also contain credentials.
+.env
+.env.*
+!.env.example

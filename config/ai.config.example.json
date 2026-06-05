@@ -1,0 +1,7 @@
+{
+  "provider": "openai-compatible",
+  "baseUrl": "",
+  "apiKey": "",
+  "model": "",
+  "enabled": false
+}
